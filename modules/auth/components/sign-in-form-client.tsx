@@ -13,14 +13,20 @@ import { FcGoogle } from "react-icons/fc";
 import { FaChrome } from "react-icons/fa";
 import { signIn } from "@/auth";
 
-async function handleGoogleSignIn(){
-"use server"
-await signIn("google")
+async function handleGoogleSignIn() {
+  "use server";
+
+  await signIn("google", {
+    redirectTo: "/",
+  });
 }
 
-async function handleGithubSignIn(){
-"use server"
-await signIn("github")
+async function handleGithubSignIn() {
+  "use server";
+
+  await signIn("github", {
+    redirectTo: "/",
+  });
 }
 
 const SignInFormClient = () => {

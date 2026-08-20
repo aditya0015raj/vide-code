@@ -68,7 +68,7 @@ interface ProjectTableProps {
 
 interface EditProjectData {
   title: string;
-  description: string;
+  description: string | null;
 }
 
 export default function ProjectTable({
@@ -104,21 +104,25 @@ export default function ProjectTable({
   };
 
   const handleUpdateProject = async () => {
-    if (!selectedProject || !onUpdateProject) return;
+  if (!selectedProject || !onUpdateProject) return;
 
-    setIsLoading(true);
+  setIsLoading(true);
 
-    try {
-      await onUpdateProject(selectedProject.id, editData);
-      setEditDialogOpen(false);
-      toast.success("Project updated successfully");
-    } catch (error) {
-      toast.error("Failed to update project");
-      console.error("Error updating project:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  try {
+    await onUpdateProject(selectedProject.id, {
+      title: editData.title,
+      description: editData.description ?? "",
+    });
+
+    setEditDialogOpen(false);
+    toast.success("Project updated successfully");
+  } catch (error) {
+    toast.error("Failed to update project");
+    console.error("Error updating project:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleMarkasFavorite = async (project: Project) => {
     //    Write your logic here
@@ -310,17 +314,17 @@ export default function ProjectTable({
             <div className="grid gap-2">
               <Label htmlFor="description">Description</Label>
               <Textarea
-                id="description"
-                value={editData.description}
-                onChange={(e) =>
-                  setEditData((prev) => ({
-                    ...prev,
-                    description: e.target.value,
-                  }))
-                }
-                placeholder="Enter project description"
-                rows={3}
-              />
+  id="description"
+  value={editData.description ?? ""}
+  onChange={(e) =>
+    setEditData((prev) => ({
+      ...prev,
+      description: e.target.value,
+    }))
+  }
+  placeholder="Enter project description"
+  rows={3}
+/>
             </div>
           </div>
           <DialogFooter>

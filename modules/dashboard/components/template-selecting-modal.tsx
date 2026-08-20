@@ -41,7 +41,7 @@ type TemplateSelectionModalProps = {
 interface TemplateOption {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   icon: string;
   color: string;
   popularity: number;
@@ -149,18 +149,17 @@ const TemplateSelectionModal = ({
   const [projectName, setProjectName] = useState("");
 
   const filteredTemplates = templates.filter((template) => {
-    const matchesSearch =
-      template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      template.tags.some((tag) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const matchesSearch =
+    template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (template.description ?? "")
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase()) ||
+    template.tags.some((tag) =>
+      tag.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
-    const matchesCategory =
-      category === "all" || template.category === category;
-
-    return matchesCategory && matchesSearch;
-  });
+  return matchesSearch;
+});
 
   const handleSelectTemplate = (templateId: string) => {
     setSelectedTemplate(templateId);
@@ -187,11 +186,12 @@ const TemplateSelectionModal = ({
       };
 
       const template = templates.find((t) => t.id === selectedTemplate);
-      onSubmit({
-        title:projectName || `New ${template?.name} Project`,
-        template:templateMap[selectedTemplate] || "REACT",
-        description:template?.description
-      })
+
+onSubmit({
+  title: projectName || `New ${template?.name} Project`,
+  template: templateMap[selectedTemplate] || "REACT",
+  description: template?.description ?? "",
+});
       onClose();
       // Reset state for next time
       setStep("select");

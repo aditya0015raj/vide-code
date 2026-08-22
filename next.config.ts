@@ -8,8 +8,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   outputFileTracingIncludes: {
-    '/api/template/[id]/route': ['./vibecode-starters/**/*'],
-  },
+  '/api/template/**/*': ['./vibecode-starters/**/*'],
+},
   images: {
     remotePatterns: [
       {

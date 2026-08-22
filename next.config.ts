@@ -1,8 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
+  outputFileTracingIncludes: {
+    '/api/template/[id]/route': ['./vibecode-starters/**/*'],
   },
   images: {
     remotePatterns: [

@@ -1,4 +1,3 @@
-// middleware.ts (project root, or inside src/ if you use that structure)
 import NextAuth from "next-auth";
 
 import {
@@ -16,10 +15,10 @@ export default auth((req) => {
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
-  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  console.log("MIDDLEWARE RAN:", nextUrl.pathname, "loggedIn:", isLoggedIn);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isApiAuthRoute) {
     return null;
@@ -40,9 +39,6 @@ export default auth((req) => {
 });
 
 export const config = {
-  matcher: [
-    "/((?!.+\\.[\\w]+$|_next).*)",
-    "/",
-    "/(api|trpc)(.*)",
-  ],
+  // copied from clerk
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
 };

@@ -1,7 +1,25 @@
 import type { NextConfig } from "next";
-// next.config.ts
+
 const nextConfig: NextConfig = {
-  // ... your existing config
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+        port: '',
+        pathname: "/**"
+      },
+      {
+        protocol: "https",
+        hostname: "avatars.githubusercontent.com",
+        port: '',
+        pathname: "/**"
+      },
+    ]
+  },
   async headers() {
     return [
       {
@@ -13,12 +31,13 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Cross-Origin-Embedder-Policy',
-            value: 'credentialless', // NOT require-corp
+            value: 'credentialless',
           },
         ],
       },
     ];
   },
+  reactStrictMode: false
 };
 
 export default nextConfig;

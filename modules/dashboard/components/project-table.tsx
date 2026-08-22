@@ -43,6 +43,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useState } from "react";
+import { Playground } from "@prisma/client";
 import {
   MoreHorizontal,
   Edit3,
@@ -62,7 +63,7 @@ interface ProjectTableProps {
     data: { title: string; description: string }
   ) => Promise<void>;
   onDeleteProject?: (id: string) => Promise<void>;
-  onDuplicateProject?: (id: string) => Promise<Project | undefined>;
+  onDuplicateProject?: (id: string) => Promise<any>;
 }
 
 interface EditProjectData {

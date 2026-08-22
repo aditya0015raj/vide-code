@@ -133,8 +133,8 @@ export const duplicateProjectById = async (id: string) => {
   try {
     const originalPlayground = await db.playground.findUnique({
       where: { id },
-      // todo: add tempalte files
     });
+
     if (!originalPlayground) {
       throw new Error("Original playground not found");
     }
@@ -145,14 +145,21 @@ export const duplicateProjectById = async (id: string) => {
         description: originalPlayground.description,
         template: originalPlayground.template,
         userId: originalPlayground.userId,
-
-        // todo: add template files
       },
     });
 
     revalidatePath("/dashboard");
-    return duplicatedPlayground;
+
+    return {
+      success: true,
+      project: duplicatedPlayground,
+    };
   } catch (error) {
     console.error("Error duplicating project:", error);
+
+    return {
+      success: false,
+      error: "Failed to duplicate project",
+    };
   }
 };

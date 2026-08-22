@@ -1,3 +1,4 @@
+// middleware.ts (project root, or inside src/ if you use that structure)
 import NextAuth from "next-auth";
 
 import {
@@ -10,13 +11,15 @@ import authConfig from "./auth.config";
 
 const { auth } = NextAuth(authConfig);
 
-export const proxy = auth((req) => {
+export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
   const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  console.log("MIDDLEWARE RAN:", nextUrl.pathname, "loggedIn:", isLoggedIn);
 
   if (isApiAuthRoute) {
     return null;

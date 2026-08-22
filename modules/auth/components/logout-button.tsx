@@ -6,11 +6,11 @@ import { signOut } from 'next-auth/react';
 
 const LogoutButton = ({children}:LogoutButtonProps) => {
     const router = useRouter();
-    const onLogout = async()=>{
-        await signOut({
-  callbackUrl: "/auth/sign-in",
-});
-    }
+    const onLogout = async () => {
+  await signOut({ redirect: false });
+  router.push("/auth/sign-in");
+  router.refresh(); // forces middleware/session re-check
+};
   return (
     <span className='cursor-pointer' onClick={onLogout}>
         {children}

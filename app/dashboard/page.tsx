@@ -38,9 +38,7 @@ const Page = async () => {
             }))}
             onDeleteProject={deleteProjectById}
             onUpdateProject={editProjectById}
-            onDuplicateProject={async (id: string) => {
-  await duplicateProjectById(id);
-}}
+            onDuplicateProject={duplicateProjectById}
           />
         )}
       </div>

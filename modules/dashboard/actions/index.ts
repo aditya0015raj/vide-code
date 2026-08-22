@@ -46,6 +46,10 @@ export const toggleStarMarked = async (
 export const getAllPlaygroundForUser = async () => {
   const user = await currentUser();
 
+   if (!user?.id) {
+    return []; // no user, no projects — critical guard
+  }
+
   try {
     const playground = await db.playground.findMany({
       where: {

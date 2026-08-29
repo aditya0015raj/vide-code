@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 interface ChatMessage {
@@ -24,38 +23,43 @@ Always provide clear, practical answers. Use proper code formatting when showing
 
   const fullMessages = [{ role: "system", content: systemPrompt }, ...messages];
 
-  const prompt = fullMessages
-    .map((msg) => `${msg.role}: ${msg.content}`)
-    .join("\n\n");
+  if (!process.env.GROQ_API_KEY) {
+    throw new Error("GROQ_API_KEY is not set in environment variables");
+  }
 
   try {
-    const response = await fetch("http://localhost:11434/api/generate", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "qwen2.5-coder:3b",
-        prompt: prompt,
-        stream: false,
-        options: {
-          temperature: 0.7, // Controls randomness (0-1)
-          max_tokens: 1000, // Maximum response length
-          top_p: 0.9, // controls diversity
-        },
+        model: "openai/gpt-oss-120b",
+        messages: fullMessages,
+        temperature: 0.7,
+        max_tokens: 1000,
+        top_p: 0.9,
       }),
     });
 
-    const data = await response.json();
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Groq API error: ${response.status} ${errText}`);
+    }
 
-    if (!data.response) {
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+
+    if (!content) {
       throw new Error("No response from AI model");
     }
 
-    return data.response.trim();
-  } catch (error) {
-    console.error("AI generation error:", error);
-    throw new Error("Failed to generate AI response");
+    return content.trim();
+  } catch (err) {
+    console.error("AI generation error:", err);
+    // preserve the real message instead of a generic one
+    throw new Error(err instanceof Error ? err.message : "Failed to generate AI response");
   }
 }
 
@@ -64,7 +68,6 @@ export async function POST(req: NextRequest) {
     const body: ChatRequest = await req.json();
     const { message, history = [] } = body;
 
-    // Validate input
     if (!message || typeof message !== "string") {
       return NextResponse.json(
         { error: "Message is required and must be a string" },
@@ -72,7 +75,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Validate history format
     const validHistory = Array.isArray(history)
       ? history.filter(
           (msg) =>
@@ -91,11 +93,7 @@ export async function POST(req: NextRequest) {
       { role: "user", content: message },
     ];
 
-    //   Generate ai response
-
     const aiResponse = await generateAIResponse(messages);
-
-
 
     return NextResponse.json({
       response: aiResponse,

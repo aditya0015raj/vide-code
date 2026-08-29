@@ -124,6 +124,9 @@ export const PlaygroundEditor = ({
         freeInlineCompletions: (completions: any) => {
           console.log("freeInlineCompletions called")
         },
+        disposeInlineCompletions: (completions: any) => {
+    console.log("disposeInlineCompletions called")
+  },
       }
     },
     [suggestion, suggestionPosition],
@@ -497,6 +500,16 @@ export const PlaygroundEditor = ({
   useEffect(() => {
     updateEditorLanguage()
   }, [activeFile])
+
+  useEffect(() => {
+    const handler = (event: PromiseRejectionEvent) => {
+      if (event.reason?.message === "Canceled" || event.reason?.name === "Canceled") {
+        event.preventDefault()
+      }
+    }
+    window.addEventListener("unhandledrejection", handler)
+    return () => window.removeEventListener("unhandledrejection", handler)
+  }, [])
 
   // Cleanup on unmount
   // Cleanup on unmount

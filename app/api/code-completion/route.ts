@@ -139,37 +139,37 @@ Generate suggestion:`;
 
 async function generateSuggestion(prompt: string): Promise<string> {
   try {
-    const response = await fetch("http://localhost:11434/api/generate", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+      },
       body: JSON.stringify({
-        model: "qwen2.5-coder:3b",
-        prompt,
-        stream: false,
-        option: {
-          temperature: 0.7,
-          max_tokens: 300,
-        },
+        model: "openai/gpt-oss-120b", // check console.groq.com/docs/models for a coder-specific option
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        max_tokens: 300,
       }),
     });
 
-       if (!response.ok) {
-      throw new Error(`AI service error: ${response.statusText}`)
+    if (!response.ok) {
+      throw new Error(`AI service error: ${response.statusText}`);
     }
 
-      const data = await response.json()
-    let suggestion = data.response
+    const data = await response.json();
+    let suggestion = data.choices?.[0]?.message?.content ?? "";
 
-     // Clean up the suggestion
+    // Clean up the suggestion
     if (suggestion.includes("```")) {
-      const codeMatch = suggestion.match(/```[\w]*\n?([\s\S]*?)```/)
-      suggestion = codeMatch ? codeMatch[1].trim() : suggestion
+      const codeMatch = suggestion.match(/```[\w]*\n?([\s\S]*?)```/);
+      suggestion = codeMatch ? codeMatch[1].trim() : suggestion;
     }
 
-    return suggestion
+    return suggestion;
   } catch (error) {
-      console.error("AI generation error:", error)
-    return "// AI suggestion unavailable"
+    console.error("AI generation error:", error);
+    return "// AI suggestion unavailable";
   }
 }
 

@@ -45,6 +45,7 @@ import {
     DropdownMenuTrigger,
     DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
+// @ts-expect-error - CSS import type declarations are not present in this project setup
 import "katex/dist/katex.min.css";
 import Image from "next/image";
 import Stream from "stream";
